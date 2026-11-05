@@ -1,0 +1,39 @@
+def main():
+    principal = float(input("Enter loan amount: "))
+    rate = float(input("Enter annual interest rate: "))
+    years = int(input("Enter number of years: "))
+
+    monthlyRate = rate / 12
+    months = years * 12
+
+    payment = principal * monthlyRate / (
+        1 - (1 + monthlyRate) ** (-months)
+    )
+
+    filename = input("Enter output file name: ")
+
+    balance = principal
+
+    outfile = open(filename, "w")
+
+    outfile.write("Month\tPayment\tInterest\tPrincipal\tBalance\n")
+
+    for month in range(1, months + 1):
+        interest = balance * monthlyRate
+        principalPaid = payment - interest
+        balance = balance - principalPaid
+
+        outfile.write(
+            str(month) + "\t" +
+            str(round(payment, 2)) + "\t" +
+            str(round(interest, 2)) + "\t" +
+            str(round(principalPaid, 2)) + "\t" +
+            str(round(max(balance, 0), 2)) + "\n"
+        )
+
+    outfile.close()
+
+    print("Amortization report saved to", filename)
+
+
+main()
