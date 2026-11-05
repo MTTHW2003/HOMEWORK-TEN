@@ -1,0 +1,85 @@
+from graphics import *
+from urllib.request import urlopen
+
+
+def frequency(url):
+    response = urlopen(url)
+
+    text = response.read().decode("utf-8", errors="replace")
+
+    response.close()
+
+    counts = [0] * 256
+
+    for ch in text:
+        value = ord(ch)
+
+        if value < 256:
+            counts[value] += 1
+
+    return counts
+
+
+def writeFile(counts, filename):
+    outfile = open(filename, "w")
+
+    for i in range(97, 123):
+        letter = chr(i)
+
+        outfile.write(letter + " " + str(counts[i]) + "\n")
+
+    outfile.close()
+
+
+def drawGraph(counts):
+    win = GraphWin("Internet Text Frequency Analysis", 700, 500)
+
+    total = sum(counts[97:123])
+
+    if total == 0:
+        print("No letters found.")
+        win.close()
+        return
+
+    ratios = []
+
+    for i in range(97, 123):
+        ratios.append(counts[i] / total)
+
+    highest = max(ratios)
+
+    win.setCoords(-1, -highest * 0.1, 27, highest * 1.2)
+
+    for i in range(26):
+        bar = Rectangle(
+            Point(i + 0.1, 0),
+            Point(i + 0.9, ratios[i])
+        )
+
+        bar.setFill("blue")
+        bar.draw(win)
+
+        label = Text(Point(i + 0.5, -highest * 0.05),
+                     chr(i + ord("a")))
+
+        label.draw(win)
+
+    win.getMouse()
+    win.close()
+
+
+def main():
+    url = input("Enter Internet text file URL: ")
+
+    counts = frequency(url)
+
+    filename = input("Enter output filename: ")
+
+    writeFile(counts, filename)
+
+    drawGraph(counts)
+
+    print("Frequency data saved to", filename)
+
+
+main()
