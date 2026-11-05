@@ -1,0 +1,67 @@
+def readPath(filename):
+    infile = open(filename, "r")
+
+    size = int(infile.readline())
+
+    path = []
+
+    for line in infile:
+        values = line.strip().split(",")
+        row = int(values[0])
+        col = int(values[1])
+        path.append((row, col))
+
+    infile.close()
+
+    return size, path
+
+
+def encipher(message, size, path):
+    message = message.ljust(size * size)
+
+    grid = []
+
+    for row in range(size):
+        grid.append(list(message[row * size:(row + 1) * size]))
+
+    cipher = ""
+
+    for row, col in path:
+        cipher += grid[row][col]
+
+    return cipher
+
+
+def decipher(cipher, size, path):
+    grid = [[" " for col in range(size)]
+            for row in range(size)]
+
+    for i in range(len(path)):
+        row, col = path[i]
+        grid[row][col] = cipher[i]
+
+    message = ""
+
+    for row in grid:
+        message += "".join(row)
+
+    return message
+
+
+def main():
+    filename = input("Enter path filename: ")
+
+    size, path = readPath(filename)
+
+    message = input("Enter message: ")
+
+    encrypted = encipher(message, size, path)
+
+    print("Encrypted message:", encrypted)
+
+    decrypted = decipher(encrypted, size, path)
+
+    print("Decrypted message:", decrypted)
+
+
+main()
