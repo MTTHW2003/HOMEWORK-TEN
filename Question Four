@@ -1,0 +1,67 @@
+from graphics import *
+import os
+
+
+def frequency(folder):
+    counts = [0] * 26
+
+    for filename in os.listdir(folder):
+
+        if filename.endswith(".py"):
+
+            infile = open(os.path.join(folder, filename), "r")
+
+            text = infile.read().lower()
+
+            infile.close()
+
+            for ch in text:
+                if ch >= "a" and ch <= "z":
+                    counts[ord(ch) - ord("a")] += 1
+
+    return counts
+
+
+def drawGraph(counts):
+    win = GraphWin("Python Code Frequency", 700, 500)
+
+    total = sum(counts)
+
+    if total == 0:
+        print("No letters found.")
+        win.close()
+        return
+
+    ratios = [count / total for count in counts]
+
+    highest = max(ratios)
+
+    win.setCoords(-1, 0, 27, highest * 1.2)
+
+    for i in range(26):
+        bar = Rectangle(
+            Point(i + 0.1, 0),
+            Point(i + 0.9, ratios[i])
+        )
+
+        bar.setFill("green")
+        bar.draw(win)
+
+        label = Text(Point(i + 0.5, -highest * 0.04),
+                     chr(i + ord("a")))
+
+        label.draw(win)
+
+    win.getMouse()
+    win.close()
+
+
+def main():
+    folder = input("Enter folder name: ")
+
+    counts = frequency(folder)
+
+    drawGraph(counts)
+
+
+main()
